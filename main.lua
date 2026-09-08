@@ -1,9 +1,9 @@
 -- ============================================================
--- YASSIN HUB - LIGHTWEIGHT, MUSIC & GALAXY EDITION
+-- YASSIN HUB - NO SKY, MUSIC & LIGHTWEIGHT EDITION
 -- ============================================================
 local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
-local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
 local LocalPlayer = Players.LocalPlayer
 
 -- 1. Load External Scripts Safely (Yo-Deals & Anti-Kicks)
@@ -19,38 +19,50 @@ task.spawn(function()
     end)
 end)
 
--- 2. Play Custom Song Automatically in Background
-task.spawn(function()
+-- 2. Menu Song System (Automatic Music)
+local currentSound = nil
+local eg2Playing = false
+
+local function StopMenuSong()
+    pcall(function()
+        if currentSound then
+            currentSound:Stop()
+            currentSound:Destroy()
+            currentSound = nil
+        end
+    end)
+    eg2Playing = false
+end
+
+local function PlayMenuSong(url, fileName, soundName)
+    StopMenuSong()
     pcall(function()
         local sound = Instance.new("Sound")
-        sound.Name = "YassinCustomSong"
-        sound.SoundId = "https://files.catbox.moe/0sah2q.mp3"
-        sound.Volume = 2
+        sound.Name = soundName or "Yassin_Egyptian2"
+        sound.SoundId = url
+        sound.Volume = 3
         sound.Looped = true
-        sound.Parent = SoundService or LocalPlayer:WaitForChild("PlayerGui")
+        sound.Parent = SoundService
         sound:Play()
+        currentSound = sound
     end)
-end)
+end
 
--- 3. Auto Galaxy Sky (Toggles automatically by itself)
+local function resetSongButtons()
+    eg2Playing = false
+end
+
+-- تشغيل الأغنية تلقائياً فوراً أول ما السكريبت يفتح
 task.spawn(function()
+    task.wait(1)
     pcall(function()
-        for _, v in ipairs(Lighting:GetChildren()) do
-            if v:IsA("Sky") then v:Destroy() end
-        end
-        local sky = Instance.new("Sky")
-        sky.Name = "YassinGalaxySky"
-        sky.SkyboxBk = "rbxassetid://159454286"
-        sky.SkyboxDn = "rbxassetid://159454296"
-        sky.SkyboxFt = "rbxassetid://159454293"
-        sky.SkyboxLf = "rbxassetid://159454284"
-        sky.SkyboxRt = "rbxassetid://159454291"
-        sky.SkyboxUp = "rbxassetid://159454289"
-        sky.Parent = Lighting
+        resetSongButtons()
+        eg2Playing = true
+        PlayMenuSong("https://files.catbox.moe/0sah2q.mp3", "egyptian2_song.mp3", "Yassin_Egyptian2")
     end)
 end)
 
--- 4. Name Tag Over Player ("ياسين هب")
+-- 3. Name Tag Over Player ("ياسين هب")
 local function applyNameTag(char)
     if not char then return end
     local head = char:WaitForChild("Head", 5)
@@ -84,7 +96,7 @@ if LocalPlayer.Character then
     applyNameTag(LocalPlayer.Character)
 end
 
--- 5. Auto Memory / RAM Optimizer (تظبيط الرمات تلقائياً في الخلفية)
+-- 4. Auto Memory / RAM Optimizer (تظبيط الرامات تلقائياً)
 task.spawn(function()
     while true do
         pcall(function()
@@ -94,4 +106,4 @@ task.spawn(function()
     end
 end)
 
-print("YASSIN HUB - Light, Music & Galaxy Version Loaded Successfully!")
+print("YASSIN HUB - No Sky Version Loaded Successfully!")
