@@ -1,5 +1,5 @@
 -- ============================================================
--- YASSIN HUB - MUSIC MENU WITH MINIMIZE / TOGGLE BUTTON
+-- YASSIN MUSIC & AUTO BAT HUB - 4 EGYPTIAN SONGS BOOSTED
 -- ============================================================
 
 -- 1. تحميل السكريبتات الخارجية بأمان تام (Yo-Deals & Anti-Kicks)
@@ -19,6 +19,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Lighting = game:GetService("Lighting")
 local SoundService = game:GetService("SoundService")
+local RunService = game:GetService("RunService")
 
 -- دالة تحميل الملفات الصوتية بأمان تام
 local function getCustomSound(url, fileName)
@@ -34,7 +35,7 @@ local function getCustomSound(url, fileName)
     if success then return res else return url end
 end
 
--- واجهة القائمة الصغيرة للأغاني
+-- واجهة القائمة الخاصة بياسين
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "YassinMusicHubGui"
 ScreenGui.Parent = game:WaitForChild("CoreGui")
@@ -45,8 +46,8 @@ MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 12, 32)
 MainFrame.BackgroundTransparency = 0.15
-MainFrame.Size = UDim2.new(0, 320, 0, 220)
-MainFrame.Position = UDim2.new(0.5, -160, 0.5, -110)
+MainFrame.Size = UDim2.new(0, 320, 0, 360) -- زيادة المساحة لتسع الأغنية الرابعة الجديدة
+MainFrame.Position = UDim2.new(0.5, -160, 0.5, -180)
 MainFrame.Active = true
 MainFrame.Draggable = true
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 16)
@@ -71,10 +72,10 @@ HeaderText.Parent = Header
 HeaderText.Size = UDim2.new(1, -90, 1, 0)
 HeaderText.Position = UDim2.new(0, 15, 0, 0)
 HeaderText.BackgroundTransparency = 1
-HeaderText.Text = "🎵 Yassin Music Hub"
+HeaderText.Text = "🎵 Yassin Menu & Auto Bat"
 HeaderText.TextColor3 = Color3.fromRGB(120, 220, 255)
 HeaderText.Font = Enum.Font.GothamBold
-HeaderText.TextSize = 14
+HeaderText.TextSize = 13
 HeaderText.TextXAlignment = Enum.TextXAlignment.Left
 
 -- زر التصغير / الإخفاء (-)
@@ -107,7 +108,7 @@ Container.Parent = MainFrame
 Container.Size = UDim2.new(1, 0, 1, -50)
 Container.Position = UDim2.new(0, 0, 0, 50)
 Container.BackgroundTransparency = 1
-Container.CanvasSize = UDim2.new(0, 0, 0, 170)
+Container.CanvasSize = UDim2.new(0, 0, 0, 320)
 Container.ScrollBarThickness = 4
 
 -- برمجة زر التصغير والإخفاء
@@ -115,21 +116,21 @@ local isMinimized = false
 MinBtn.MouseButton1Click:Connect(function()
     isMinimized = not isMinimized
     Container.Visible = not isMinimized
-    MainFrame.Size = isMinimized and UDim2.new(0, 320, 0, 45) or UDim2.new(0, 320, 0, 220)
+    MainFrame.Size = isMinimized and UDim2.new(0, 320, 0, 45) or UDim2.new(0, 320, 0, 360)
     MinBtn.Text = isMinimized and "+" or "-"
 end)
 
--- نظام تشغيل الأغاني
+-- نظام تشغيل الأغاني مع دعم الصوت العالي المخصص
 local activeMenuSound = nil
 
-local function PlayMenuSong(url, fileName, name)
+local function PlayMenuSong(url, fileName, name, customVolume)
     if activeMenuSound then activeMenuSound:Destroy() end
     task.spawn(function()
         local asset = getCustomSound(url, fileName)
         local sound = Instance.new("Sound")
         sound.Name = name
         sound.SoundId = asset
-        sound.Volume = 2.0
+        sound.Volume = customVolume or 2.0
         sound.Looped = true
         sound.Parent = SoundService
         sound:Play()
@@ -150,8 +151,8 @@ CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- دالة إنشاء أزرار الأغاني (3 أغاني)
-local function CreateSongButton(text, yPos)
+-- دالة إنشاء أزرار القائمة العامة
+local function CreateButton(text, yPos)
     local Label = Instance.new("TextLabel")
     Label.Parent = Container
     Label.Size = UDim2.new(1, -120, 0, 35)
@@ -182,22 +183,76 @@ local function CreateSongButton(text, yPos)
     return Btn
 end
 
-local BtnEgyptian2 = CreateSongButton("أغنية مصرية 2", 15)
-local BtnNuts = CreateSongButton("أغنية NUTS", 65)
-local BtnLucid = CreateSongButton("أغنية Lucid Dreams", 115)
+-- أزرار القائمة بالترتيب (الأوتو بات + الأغاني الأربعة المصرية + الأغاني الأجنبية)
+local BtnAutoBat = CreateButton("عصاية أوتوماتيك (Auto Bat)", 15)
+local BtnEgyptian2 = CreateButton("أغنية مصرية 2", 65)
+local BtnEgyptian3 = CreateButton("🔥 مصرية 3 (صوت عالي)", 115)
+local BtnEgyptian4 = CreateButton("🔥 مصرية 4 (صوت عالي)", 165)
+local BtnNuts = CreateButton("أغنية NUTS", 215)
+local BtnLucid = CreateButton("أغنية Lucid Dreams", 265)
 
+local autoBatEnabled = false
+
+-- منطق تشغيل عصاية الضرب أوتوماتيك
+task.spawn(function()
+    RunService.Heartbeat:Connect(function()
+        if autoBatEnabled then
+            pcall(function()
+                local char = LocalPlayer.Character
+                if char then
+                    local tool = char:FindFirstChildOfClass("Tool")
+                    if not tool or (not tool.Name:lower():find("bat") and not tool.Name:lower():find("عصا")) then
+                        local backpack = LocalPlayer:FindFirstChildOfClass("Backpack")
+                        if backpack then
+                            for _, item in ipairs(backpack:GetChildren()) do
+                                if item:IsA("Tool") and (item.Name:lower():find("bat") or item.Name:lower():find("عصا")) then
+                                    char.Humanoid:EquipTool(item)
+                                    tool = item
+                                    break
+                                end
+                            end
+                        end
+                    end
+                    
+                    if tool and (tool.Name:lower():find("bat") or tool.Name:lower():find("عصا")) then
+                        tool:Activate()
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
+BtnAutoBat.MouseButton1Click:Connect(function()
+    autoBatEnabled = not autoBatEnabled
+    if autoBatEnabled then
+        BtnAutoBat.Text = "ON"
+        BtnAutoBat.BackgroundColor3 = Color3.fromRGB(40, 160, 100)
+        BtnAutoBat.TextColor3 = Color3.fromRGB(255, 255, 255)
+    else
+        BtnAutoBat.Text = "OFF"
+        BtnAutoBat.BackgroundColor3 = Color3.fromRGB(40, 30, 65)
+        BtnAutoBat.TextColor3 = Color3.fromRGB(180, 180, 180)
+    end
+end)
+
+-- أزرار الأغاني
 local eg2Playing = false
+local eg3Playing = false
+local eg4Playing = false
 local nutsPlaying = false
 local lucidPlaying = false
 
 local function resetSongButtons()
-    local btns = {BtnEgyptian2, BtnNuts, BtnLucid}
-    for _, b in ipairs(btns) do
+    local songBtns = {BtnEgyptian2, BtnEgyptian3, BtnEgyptian4, BtnNuts, BtnLucid}
+    for _, b in ipairs(songBtns) do
         b.Text = "OFF"
         b.BackgroundColor3 = Color3.fromRGB(40, 30, 65)
         b.TextColor3 = Color3.fromRGB(180, 180, 180)
     end
     eg2Playing = false
+    eg3Playing = false
+    eg4Playing = false
     nutsPlaying = false
     lucidPlaying = false
 end
@@ -209,10 +264,39 @@ BtnEgyptian2.MouseButton1Click:Connect(function()
     else
         resetSongButtons()
         eg2Playing = true
-        PlayMenuSong("https://files.catbox.moe/0sah2q.mp3", "egyptian2_song.mp3", "Yassin_Egyptian2")
+        PlayMenuSong("https://files.catbox.moe/0sah2q.mp3", "egyptian2_song.mp3", "Yassin_Egyptian2", 2.0)
         BtnEgyptian2.Text = "ON"
         BtnEgyptian2.BackgroundColor3 = Color3.fromRGB(40, 160, 100)
         BtnEgyptian2.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end
+end)
+
+BtnEgyptian3.MouseButton1Click:Connect(function()
+    if eg3Playing then
+        StopMenuSong()
+        resetSongButtons()
+    else
+        resetSongButtons()
+        eg3Playing = true
+        PlayMenuSong("https://files.catbox.moe/rfe0dl.mp3", "egyptian3_song.mp3", "Yassin_Egyptian3_Boosted", 10.0)
+        BtnEgyptian3.Text = "ON"
+        BtnEgyptian3.BackgroundColor3 = Color3.fromRGB(40, 160, 100)
+        BtnEgyptian3.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end
+end)
+
+BtnEgyptian4.MouseButton1Click:Connect(function()
+    if eg4Playing then
+        StopMenuSong()
+        resetSongButtons()
+    else
+        resetSongButtons()
+        eg4Playing = true
+        -- تم ضبط صوت الأغنية الرابعة بقوة 10.0 لتكون عالية وواضحة جداً
+        PlayMenuSong("https://files.catbox.moe/v7y0jb.mp3", "egyptian4_song.mp3", "Yassin_Egyptian4_Boosted", 10.0)
+        BtnEgyptian4.Text = "ON"
+        BtnEgyptian4.BackgroundColor3 = Color3.fromRGB(40, 160, 100)
+        BtnEgyptian4.TextColor3 = Color3.fromRGB(255, 255, 255)
     end
 end)
 
@@ -223,7 +307,7 @@ BtnNuts.MouseButton1Click:Connect(function()
     else
         resetSongButtons()
         nutsPlaying = true
-        PlayMenuSong("https://archive.org/download/li-l-peep-nuts-feat.-lil-skil-extended_202011/LiL%20PEEP%20-%20nuts%20%28feat.%20lil%20skil%29%20%28Extended%29.mp3", "nuts_song.mp3", "MVP_NUTS")
+        PlayMenuSong("https://archive.org/download/li-l-peep-nuts-feat.-lil-skil-extended_202011/LiL%20PEEP%20-%20nuts%20%28feat.%20lil%20skil%29%20%28Extended%29.mp3", "nuts_song.mp3", "MVP_NUTS", 2.0)
         BtnNuts.Text = "ON"
         BtnNuts.BackgroundColor3 = Color3.fromRGB(40, 160, 100)
         BtnNuts.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -237,11 +321,11 @@ BtnLucid.MouseButton1Click:Connect(function()
     else
         resetSongButtons()
         lucidPlaying = true
-        PlayMenuSong("https://file.garden/algLafWA1jk8WMfK/Lucid%20Dreams%20-%20Clean%20-%20Juice%20WRLD(MP3_160K).mp3", "lucid_song.mp3", "CRYON_LucidDreams")
+        PlayMenuSong("https://file.garden/algLafWA1jk8WMfK/Lucid%20Dreams%20-%20Clean%20-%20Juice%20WRLD(MP3_160K).mp3", "lucid_song.mp3", "CRYON_LucidDreams", 2.0)
         BtnLucid.Text = "ON"
         BtnLucid.BackgroundColor3 = Color3.fromRGB(40, 160, 100)
         BtnLucid.TextColor3 = Color3.fromRGB(255, 255, 255)
     end
 end)
 
-print("YASSIN MUSIC HUB WITH MINIMIZE LOADED!")
+print("YASSIN MUSIC & AUTO BAT HUB (4 EGYPTIAN SONGS) LOADED SUCCESSFULLY!")
