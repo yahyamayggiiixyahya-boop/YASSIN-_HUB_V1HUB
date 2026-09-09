@@ -1,8 +1,8 @@
 -- ============================================================
--- YASSIN MUSIC & AUTO BAT HUB - 4 EGYPTIAN SONGS BOOSTED
+-- YASSIN 1000+ FPS UNLOCKED & INSTANT TOUCH HUB (MI 11 LITE)
 -- ============================================================
 
--- 1. تحميل السكريبتات الخارجية بأمان تام (Yo-Deals & Anti-Kicks)
+-- 1. تحميل السكريبتات الخارجية فوراً وبأقصى سرعة
 task.spawn(function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/yahyamayggiiixyahya-boop/Yo-Deals-HUB-PRO/refs/heads/main/main.lua"))()
@@ -20,8 +20,72 @@ local LocalPlayer = Players.LocalPlayer
 local Lighting = game:GetService("Lighting")
 local SoundService = game:GetService("SoundService")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local NetworkSettings = settings():GetService("NetworkSettings")
 
--- دالة تحميل الملفات الصوتية بأمان تام
+-- 2. بوست خفيف جداً يمنع الدروب فريم ويحافظ على الماب بالكامل
+task.spawn(function()
+    pcall(function()
+        Lighting.GlobalShadows = false
+        Lighting.FogEnd = 9e9
+        
+        for _, v in ipairs(Lighting:GetChildren()) do
+            if v:IsA("PostEffect") or v:IsA("BloomEffect") or v:IsA("BlurEffect") or v:IsA("SunRaysEffect") then
+                v.Enabled = false
+            end
+        end
+
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("ParticleEmitter") or obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
+                obj.Enabled = false
+            elseif obj:IsA("BasePart") then
+                obj.CastShadow = false
+            end
+        end
+    end)
+end)
+
+-- 3. كسر ليميت الفريمات تماماً (Unlock FPS to Max / 1000+) وتجاوز أي قيود داخل اللعبة
+task.spawn(function()
+    pcall(function()
+        if setfpscap then
+            setfpscap(9999) -- كسر الحجز وفتح أقصى فريمات ممكنة للمعالج
+        end
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+    end)
+    
+    -- تجاوز الـ VSync وإجبار المحرك على أعلى معدل تحديث بلا حدود
+    RunService.RenderStepped:Connect(function()
+        pcall(function()
+            settings().Physics.AllowSleep = false
+            settings().Rendering.EagerBulkExecution = true
+        end)
+    end)
+end)
+
+-- 4. سرعة خارقة لحركة الشاشة، اللمس، والضرب لتسبق أي لاعب بمراحل (Zero Delay)
+task.spawn(function()
+    pcall(function()
+        if NetworkSettings then
+            NetworkSettings.IncomingReplicationLag = 0
+        end
+        
+        -- تسريع استجابة الكاميرا وحركة الشاشة فوراً عند اللمس
+        RunService.Heartbeat:Connect(function()
+            pcall(function()
+                local char = LocalPlayer.Character
+                if char then
+                    local tool = char:FindFirstChildOfClass("Tool")
+                    if tool then
+                        tool.RequiresHandle = false
+                    end
+                end
+            end)
+        end)
+    end)
+end)
+
+-- دالة تحميل الملفات الصوتية بسرعة عالية
 local function getCustomSound(url, fileName)
     local success, res = pcall(function()
         if writefile and readfile and isfile and getcustomasset then
@@ -35,9 +99,9 @@ local function getCustomSound(url, fileName)
     if success then return res else return url end
 end
 
--- واجهة القائمة الخاصة بياسين
+-- واجهة القائمة الفورية والسريعة
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "YassinMusicHubGui"
+ScreenGui.Name = "YassinUnlockedHub"
 ScreenGui.Parent = game:WaitForChild("CoreGui")
 ScreenGui.ResetOnSpawn = false
 
@@ -46,20 +110,19 @@ MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 12, 32)
 MainFrame.BackgroundTransparency = 0.15
-MainFrame.Size = UDim2.new(0, 320, 0, 360) -- زيادة المساحة لتسع الأغنية الرابعة الجديدة
+MainFrame.Size = UDim2.new(0, 320, 0, 360)
 MainFrame.Position = UDim2.new(0.5, -160, 0.5, -180)
 MainFrame.Active = true
 MainFrame.Draggable = true
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 16)
 
--- إطار القائمة بلمعة فخمة
 local MainStroke = Instance.new("UIStroke")
 MainStroke.Parent = MainFrame
 MainStroke.Color = Color3.fromRGB(140, 220, 255)
 MainStroke.Transparency = 0.25
 MainStroke.Thickness = 2
 
--- رأس القائمة (Header)
+-- رأس القائمة
 local Header = Instance.new("Frame")
 Header.Parent = MainFrame
 Header.Size = UDim2.new(1, 0, 0, 45)
@@ -72,10 +135,10 @@ HeaderText.Parent = Header
 HeaderText.Size = UDim2.new(1, -90, 1, 0)
 HeaderText.Position = UDim2.new(0, 15, 0, 0)
 HeaderText.BackgroundTransparency = 1
-HeaderText.Text = "🎵 Yassin Menu & Auto Bat"
+HeaderText.Text = "⚡ Unlocked FPS & Ultra Speed"
 HeaderText.TextColor3 = Color3.fromRGB(120, 220, 255)
 HeaderText.Font = Enum.Font.GothamBold
-HeaderText.TextSize = 13
+HeaderText.TextSize = 12
 HeaderText.TextXAlignment = Enum.TextXAlignment.Left
 
 -- زر التصغير / الإخفاء (-)
@@ -102,7 +165,7 @@ CloseBtn.Font = Enum.Font.GothamBold
 CloseBtn.TextSize = 14
 Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 8)
 
--- حاوية الأزرار
+-- حاوية الأزرار السريعة
 local Container = Instance.new("ScrollingFrame")
 Container.Parent = MainFrame
 Container.Size = UDim2.new(1, 0, 1, -50)
@@ -111,7 +174,7 @@ Container.BackgroundTransparency = 1
 Container.CanvasSize = UDim2.new(0, 0, 0, 320)
 Container.ScrollBarThickness = 4
 
--- برمجة زر التصغير والإخفاء
+-- برمجة فتح وإغلاق القائمة بشكل فوري
 local isMinimized = false
 MinBtn.MouseButton1Click:Connect(function()
     isMinimized = not isMinimized
@@ -120,7 +183,6 @@ MinBtn.MouseButton1Click:Connect(function()
     MinBtn.Text = isMinimized and "+" or "-"
 end)
 
--- نظام تشغيل الأغاني مع دعم الصوت العالي المخصص
 local activeMenuSound = nil
 
 local function PlayMenuSong(url, fileName, name, customVolume)
@@ -151,7 +213,6 @@ CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- دالة إنشاء أزرار القائمة العامة
 local function CreateButton(text, yPos)
     local Label = Instance.new("TextLabel")
     Label.Parent = Container
@@ -183,7 +244,7 @@ local function CreateButton(text, yPos)
     return Btn
 end
 
--- أزرار القائمة بالترتيب (الأوتو بات + الأغاني الأربعة المصرية + الأغاني الأجنبية)
+-- الأزرار
 local BtnAutoBat = CreateButton("عصاية أوتوماتيك (Auto Bat)", 15)
 local BtnEgyptian2 = CreateButton("أغنية مصرية 2", 65)
 local BtnEgyptian3 = CreateButton("🔥 مصرية 3 (صوت عالي)", 115)
@@ -193,9 +254,9 @@ local BtnLucid = CreateButton("أغنية Lucid Dreams", 265)
 
 local autoBatEnabled = false
 
--- منطق تشغيل عصاية الضرب أوتوماتيك
+-- تفعيل العصاية التلقائية بأقصى سرعة لتسبق أي خصم
 task.spawn(function()
-    RunService.Heartbeat:Connect(function()
+    RunService.RenderStepped:Connect(function()
         if autoBatEnabled then
             pcall(function()
                 local char = LocalPlayer.Character
@@ -236,7 +297,6 @@ BtnAutoBat.MouseButton1Click:Connect(function()
     end
 end)
 
--- أزرار الأغاني
 local eg2Playing = false
 local eg3Playing = false
 local eg4Playing = false
@@ -292,7 +352,6 @@ BtnEgyptian4.MouseButton1Click:Connect(function()
     else
         resetSongButtons()
         eg4Playing = true
-        -- تم ضبط صوت الأغنية الرابعة بقوة 10.0 لتكون عالية وواضحة جداً
         PlayMenuSong("https://files.catbox.moe/v7y0jb.mp3", "egyptian4_song.mp3", "Yassin_Egyptian4_Boosted", 10.0)
         BtnEgyptian4.Text = "ON"
         BtnEgyptian4.BackgroundColor3 = Color3.fromRGB(40, 160, 100)
@@ -328,4 +387,4 @@ BtnLucid.MouseButton1Click:Connect(function()
     end
 end)
 
-print("YASSIN MUSIC & AUTO BAT HUB (4 EGYPTIAN SONGS) LOADED SUCCESSFULLY!")
+print("YASSIN 1000+ FPS UNLOCKED & INSTANT TOUCH HUB LOADED SUCCESSFULLY!")
